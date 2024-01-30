@@ -1,3 +1,8 @@
+// SIT315
+// Smart Plant Watering System
+// Made by Om Tomar
+// Roll No: 2210994882
+
 #include <LiquidCrystal.h>
 
 const int TMP36 = A0;
