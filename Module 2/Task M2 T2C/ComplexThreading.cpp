@@ -1,14 +1,9 @@
 /* ComplexThreading.cpp
- * Greg McIntyre
- * 9/4/2019
+ * Om Tomar
+ * 25/02/2023
  * 
  * This program generates a random array of LENGTH and sorts it seqentualy and in parallel
  * this program requires qSort.o to compile, makefile is included, use the comman below for simplest build and run
-
- $make all run
-
-  * make command
-
 g++ -fopenmp ComplexThreading.cpp qSort.o
 
 */
