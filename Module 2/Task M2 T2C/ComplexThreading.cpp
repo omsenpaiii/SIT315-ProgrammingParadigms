@@ -5,10 +5,7 @@
  * This program generates a random array of LENGTH and sorts it seqentualy and in parallel
  * this program requires qSort.o to compile, makefile is included, use the comman below for simplest build and run
 g++ -fopenmp ComplexThreading.cpp qSort.o
-
 */
-
-//#include <stdio.h>
 
 #include "qSort.h"
 #include <iostream>
