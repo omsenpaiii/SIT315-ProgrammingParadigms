@@ -1,15 +1,13 @@
-/* OpenCL MPI
- * Om Tomar
- * 09/03/24
- * 
- * Compile with 
- * $ mpicxx openclMPI.cpp -fopenmp -lOpenCL
- * 
- * Run
- * $ mpirun -np 4 --hostfile ~/Desktop/Slave.list
- * $ mpirun -np 4 ./a.out
- * 
- */
+// OpenCL MPI Matrix Multiplication
+// Author: Om Tomar
+// Date: 09/03/24
+
+// Compile with 
+// $ mpicxx openclMPI.cpp -fopenmp -lOpenCL
+
+// Run
+// $ mpirun -np 4 --hostfile ~/Desktop/Slave.list
+// $ mpirun -np 4 ./a.out
 
 #include<mpi.h>
 #include<stdlib.h>
@@ -20,13 +18,13 @@
 #include<omp.h>
 #include<CL/cl.h>
 
-#define N 800
+#define N 800 // Define the size of the matrices
 
 using namespace std;
 
-void intialiseArray(int array[N][N]);
-void printArrays(int array[N][N]);
-void openclMatrixMultiplication(int np, int rank, int inputArray1[N][N], int inputArray2[N][N], int outputArray[N][N]);
+void intialiseArray(int array[N][N]); // Function to initialize the array with random values
+void printArrays(int array[N][N]); // Function to print arrays to the console
+void openclMatrixMultiplication(int np, int rank, int inputArray1[N][N], int inputArray2[N][N], int outputArray[N][N]); // Function to perform matrix multiplication
 //void MatrixMultiplication(int np, int rank, int inputArray1[N][N], int inputArray2[N][N], int outputArray[N*N]);
 struct timeval timecheck;
 
@@ -79,10 +77,10 @@ int main(){
     MPI_Init(NULL, NULL);
 
     int np = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &np);     //number of nodes
+    MPI_Comm_size(MPI_COMM_WORLD, &np);     // Get the number of nodes
 
     int rank = 0;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);    // Get the rank of the current process
 
     int inputArray1[N][N], inputArray2[N][N];
     int outputArray[N][N]={{0}};
@@ -90,9 +88,9 @@ int main(){
 
 
 
-    if (rank==0) {
-        intialiseArray(inputArray1);
-        intialiseArray(inputArray2);
+    if (rank==0) { // If it is the root process
+        intialiseArray(inputArray1); // Initialize inputArray1
+        intialiseArray(inputArray2); // Initialize inputArray2
 
         //printArrays(inputArray1);
         //printArrays(inputArray2);
@@ -109,16 +107,16 @@ int main(){
 	long timeofday_start = (long)timecheck.tv_sec * 1000 + (long)timecheck.tv_usec /1000;
 
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Bcast(&inputArray1, N*N, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&inputArray2, N*N, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&inputArray1, N*N, MPI_INT, 0, MPI_COMM_WORLD); // Broadcast inputArray1 to all processes
+    MPI_Bcast(&inputArray2, N*N, MPI_INT, 0, MPI_COMM_WORLD); // Broadcast inputArray2 to all processes
 
     MPI_Barrier(MPI_COMM_WORLD);
-    openclMatrixMultiplication(np, rank, inputArray1, inputArray2, outputArray);
+    openclMatrixMultiplication(np, rank, inputArray1, inputArray2, outputArray); // Perform matrix multiplication
     MPI_Barrier(MPI_COMM_WORLD);
     
     //if(rank==0)printArrays(outputArray);
     
-    MPI_Finalize();
+    MPI_Finalize(); // Finalize MPI
 
     //Timer end
     gettimeofday(&timecheck, NULL);
@@ -126,35 +124,35 @@ int main(){
 	double time_elapsed = timeofday_end - timeofday_start;
 	
     if (rank == 0){
-        printf("\t\tTime elapsed: %f ms\n", time_elapsed);
+        printf("\t\tTime elapsed: %f ms\n", time_elapsed); // Print the time elapsed for the operation
     }
 
     return 0;
 }
 
 void intialiseArray(int array[N][N]) {
-	printf("intialising array... ");
+	printf("intialising array... "); // Print message indicating initialization of the array
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = 0; j < N; j++)
 		{
-			array[i][j] = rand() % ((10 - 1) + 1) + 1;
+			array[i][j] = rand() % ((10 - 1) + 1) + 1; // Assign random values to the array elements
 		}
 	}
-	printf("complete\n");
+	printf("complete\n"); // Print message indicating completion of initialization
 }		//intialises array with random values, uses the N global variable
 
 void printArrays(int array[N][N]){
-	printf("[");
+	printf("["); // Print opening bracket for array
 	for (int i = 0; i < N; i++) {
-		printf("[");
+		printf("["); // Print opening bracket for inner array
 		for (int j = 0; j < N; j++) {
-			printf("%i", array[i][j]);
+			printf("%i", array[i][j]); // Print array element
 			printf(" ");
 		}
-		printf("]\n");
+		printf("]\n"); // Print closing bracket for inner array and move to next line
 	}
-	printf("]\n\n");
+	printf("]\n\n"); // Print closing bracket for array and move to next line
 }		//prints array to console
 
 void openclMatrixMultiplication(int np, int rank, int inputArray1[N][N], int inputArray2[N][N], int outputArray[N][N]){
@@ -169,7 +167,7 @@ void openclMatrixMultiplication(int np, int rank, int inputArray1[N][N], int inp
 
     //copying data from the device back to host c matrix
     clEnqueueReadBuffer(queue, bufC, CL_TRUE, 0, N * N*sizeof(int), c, 0, NULL, NULL);
-    //print_matrix(c);
+    //print_matrix(c)
    
     free_memory();
 
@@ -352,6 +350,7 @@ void matrix_mul(int a[N][N], int b[N][N], int c[N][N]) {
         } 
     }
 }
+
 void print_matrix(int a[N][N]) 
 {
     for(int i=0; i < N; i++) {
