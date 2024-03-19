@@ -14,7 +14,7 @@
 
 using namespace std;
 
-#define NUM_LIGHTS 12       //number of traffic lights
+#define NUM_LIGHTS 12       // Number of traffic lights
 
 int main(){
 
@@ -23,23 +23,27 @@ int main(){
     time_t rawTime;
     time(&rawTime);
 
-    srand (time(NULL));
+    srand (time(NULL)); // Seed the random number generator with the current time
 
+    // Generate traffic information for each traffic light
     for (int i = 1 ; i <= NUM_LIGHTS ; i++){
         
-        output += to_string(rawTime) + " ";
-        output+= to_string(i) + " ";
+        output += to_string(rawTime) + " "; // Add timestamp to output string
+        output+= to_string(i) + " ";         // Add traffic light number to output string
+
+        // Generate a random number of cars between 1 and 10
         int cars = rand() % ((10 - 1) + 1) + 1;
-        output+= to_string(cars) + " \n";                   //log entry std::stamp ; light no. ; number of cars (random)
+        
+        output+= to_string(cars) + " \n";    // Add number of cars to output string with newline (log entry format: timestamp ; light number ; number of cars)
     }
 
-    fstream log("log.txt", ios::app);                       //append to log file
+    fstream log("log.txt", ios::app);                       // Open log file in append mode
     if(!log.is_open()){
-        cout<<"Error: Log file not found"<<endl;
+        cout<<"Error: Log file not found"<<endl;            // Output error message if log file cannot be opened
     } else {
-        log<<output;
-        cout<<output;
-        cout<<"log.txt has been updated at "<<ctime(&rawTime)<<endl;
+        log<<output;                                        // Write output string to log file
+        cout<<output;                                       // Output the generated traffic information
+        cout<<"log.txt has been updated at "<<ctime(&rawTime)<<endl; // Output message indicating log file update time
     }
     return 0;
 }
